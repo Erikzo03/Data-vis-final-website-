@@ -330,27 +330,26 @@ const mapObs = new IntersectionObserver(entries=>{
    ═══════════════════════════════════════════════════════════ */
 let normMode = true;
 function drawSeasonal(){
-  const W=760, H=300, PL=52, PR=24, PT=24, PB=42;
+  const W=760, H=300, PL=52, PR=100, PT=24, PB=42;
   const cW=W-PL-PR, cH=H-PT-PB;
   const mg = d3.max(seasonalData, d=>d.gaps);
   const mf = d3.max(seasonalData, d=>d.fishHrs);
-  const gV = seasonalData.map(d=>normMode? d.gaps/mg : d.gaps);
-  const fV = seasonalData.map(d=>normMode? d.fishHrs/mf : d.fishHrs);
-  const maxG = normMode? 1 : mg;
-  const maxF = normMode? 1 : mf;
+  // Always normalised (indexed to peak)
+  const gV = seasonalData.map(d=> d.gaps/mg);
+  const fV = seasonalData.map(d=> d.fishHrs/mf);
 
   const xS = i => PL + (i/(seasonalData.length-1)) * cW;
-  const yG = v => PT + cH - (v/maxG)*cH;
-  const yF = v => PT + cH - (v/maxF)*cH;
+  const yG = v => PT + cH - (v)*cH;
+  const yF = v => PT + cH - (v)*cH;
 
   let html='';
 
   // Y gridlines + labels
-  const ticks = normMode? [0.5,0.75,1] : [0.25,0.5,0.75,1];
+  const ticks = [0.5,0.75,1];
   ticks.forEach(p=>{
     const y = PT+cH-p*cH;
-    html += `<line x1="${PL}" y1="${y}" x2="${W-PR}" y2="${y}" stroke="#132030" stroke-width="1"/>`;
-    const label = normMode ? (p*100).toFixed(0)+'%' : fmtK(p*mg);
+    html += `<line x1="${PL}" y1="${y}" x2="${W-PR}" y2="${y}" stroke="#1e3248" stroke-width="1"/>`;
+    const label = (p*100).toFixed(0)+'%';
     html += `<text x="${PL-8}" y="${y+3}" text-anchor="end" fill="#4a6580" font-family="IBM Plex Mono,monospace" font-size="9">${label}</text>`;
   });
 
@@ -360,43 +359,69 @@ function drawSeasonal(){
   });
 
   // Y-axis title
-  html += `<text x="${PL-32}" y="${PT+cH/2}" text-anchor="middle" fill="#4a6580" font-family="IBM Plex Sans,sans-serif" font-size="10" transform="rotate(-90 ${PL-32} ${PT+cH/2})">${normMode?'Share of peak':'Absolute value'}</text>`;
+  html += `<text x="${PL-32}" y="${PT+cH/2}" text-anchor="middle" fill="#4a6580" font-family="IBM Plex Sans,sans-serif" font-size="10" transform="rotate(-90 ${PL-32} ${PT+cH/2})">Share of peak</text>`;
 
   // Chart frame
-  html += `<rect x="${PL}" y="${PT}" width="${cW}" height="${cH}" fill="none" stroke="#132030" stroke-width="0.5"/>`;
+  html += `<rect x="${PL}" y="${PT}" width="${cW}" height="${cH}" fill="none" stroke="#1e3248" stroke-width="0.5"/>`;
 
-  // Fishing hours line (no fill)
-  const fLine = `M${xS(0)},${yF(fV[0])} ` + fV.slice(1).map((v,i)=>`L${xS(i+1)},${yF(v)}`).join(' ');
-  html += `<path d="${fLine}" fill="none" stroke="#3db8a8" stroke-width="1.8" stroke-dasharray="5 3" stroke-linecap="round" opacity="0.9"/>`;
+  // ── Autumn shaded region (Sep–Oct, index 8–9) ──
+  const autStart = xS(8);
+  const autEnd   = xS(9);
+  html += `<rect x="${autStart}" y="${PT}" width="${autEnd-autStart}" height="${cH}" fill="rgba(240,160,64,0.06)" rx="2"/>`;
+  html += `<text x="${(autStart+autEnd)/2}" y="${PT+14}" text-anchor="middle" fill="#f0a040" font-family="IBM Plex Mono,monospace" font-size="8" letter-spacing="0.08em" opacity="0.7">PEAK SEASON</text>`;
 
-  // Gap events line (no fill)
-  const gLine = `M${xS(0)},${yG(gV[0])} ` + gV.slice(1).map((v,i)=>`L${xS(i+1)},${yG(v)}`).join(' ');
-  html += `<path d="${gLine}" fill="none" stroke="#f0a040" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>`;
+  // ── Smooth curves (monotone cubic spline via SVG) ──
+  // Helper: monotone-x tangent computation (Fritsch-Carlson)
+  function monotonePath(vals, yFn){
+    const n = vals.length;
+    const xs = vals.map((_,i)=> xS(i));
+    const ys = vals.map(v => yFn(v));
+    if(n<2) return '';
 
-  // Peak marker + annotation (gap peak)
-  const gPeak = gV.indexOf(Math.max(...gV));
-  html += `<circle cx="${xS(gPeak)}" cy="${yG(gV[gPeak])}" r="4.5" fill="#f0a040" stroke="#0d1829" stroke-width="2"/>`;
-  html += `<text x="${xS(gPeak)}" y="${yG(gV[gPeak])-14}" text-anchor="middle" fill="#f0a040" font-family="IBM Plex Mono,monospace" font-size="10" font-weight="500" letter-spacing="0.06em">PEAK</text>`;
-
-  // Gap trough marker (no label — avoids clipping at right edge)
-  const gTrough = gV.indexOf(Math.min(...gV));
-  html += `<circle cx="${xS(gTrough)}" cy="${yG(gV[gTrough])}" r="3.5" fill="#0d1829" stroke="#f0a040" stroke-width="1.5"/>`;
-
-  // Fishing peak
-  const fPeak = fV.indexOf(Math.max(...fV));
-  html += `<circle cx="${xS(fPeak)}" cy="${yF(fV[fPeak])}" r="3.5" fill="#3db8a8" stroke="#0d1829" stroke-width="2"/>`;
-
-  // Update footer stat chip (sits next to "Show absolute values" button)
-  const statEl = $('#seasonal-stat');
-  const statVal = $('#seasonal-stat-val');
-  if(statEl && statVal){
-    if(normMode){
-      statEl.style.display = 'flex';
-      statVal.textContent = `${(gV[gPeak]/Math.max(0.01,gV[gTrough])).toFixed(1)}\u00d7 more gaps in ${seasonalData[gPeak].name}`;
-    } else {
-      statEl.style.display = 'none';
+    // Compute slopes
+    const delta = [];
+    for(let i=0;i<n-1;i++) delta.push((ys[i+1]-ys[i])/(xs[i+1]-xs[i]));
+    const m = [delta[0]];
+    for(let i=1;i<n-1;i++){
+      if(delta[i-1]*delta[i]<=0) m.push(0);
+      else m.push((delta[i-1]+delta[i])/2);
     }
+    m.push(delta[n-2]);
+    // Monotonicity constraint
+    for(let i=0;i<n-1;i++){
+      if(Math.abs(delta[i])<1e-12){ m[i]=0; m[i+1]=0; }
+      else{
+        const a = m[i]/delta[i], b = m[i+1]/delta[i];
+        const s = a*a+b*b;
+        if(s>9){ const t=3/Math.sqrt(s); m[i]=t*a*delta[i]; m[i+1]=t*b*delta[i]; }
+      }
+    }
+    // Build cubic bezier path
+    let d = `M${xs[0].toFixed(2)},${ys[0].toFixed(2)}`;
+    for(let i=0;i<n-1;i++){
+      const dx = (xs[i+1]-xs[i])/3;
+      const cp1x = xs[i]+dx, cp1y = ys[i]+m[i]*dx;
+      const cp2x = xs[i+1]-dx, cp2y = ys[i+1]-m[i+1]*dx;
+      d += ` C${cp1x.toFixed(2)},${cp1y.toFixed(2)} ${cp2x.toFixed(2)},${cp2y.toFixed(2)} ${xs[i+1].toFixed(2)},${ys[i+1].toFixed(2)}`;
+    }
+    return d;
   }
+
+  // Fishing hours line (smooth, dashed)
+  const fPath = monotonePath(fV, yF);
+  html += `<path d="${fPath}" fill="none" stroke="#3db8a8" stroke-width="1.8" stroke-dasharray="5 3" opacity="0.9"/>`;
+
+  // Gap events line (smooth, solid)
+  const gPath = monotonePath(gV, yG);
+  html += `<path d="${gPath}" fill="none" stroke="#f0a040" stroke-width="2.2"/>`;
+
+  // ── Direct labels at line ends ──
+  const lastI = seasonalData.length - 1;
+  const gEndY = yG(gV[lastI]);
+  const fEndY = yF(fV[lastI]);
+  const labelX = xS(lastI) + 10;
+  html += `<text x="${labelX}" y="${gEndY+4}" fill="#f0a040" font-family="IBM Plex Sans,sans-serif" font-size="11" font-weight="500">Gap events</text>`;
+  html += `<text x="${labelX}" y="${fEndY+4}" fill="#3db8a8" font-family="IBM Plex Sans,sans-serif" font-size="11" font-weight="500">Fishing hours</text>`;
 
   // Crosshair (hidden by default)
   html += `<line id="seasonal-crosshair" x1="0" y1="${PT}" x2="0" y2="${PT+cH}" stroke="#4a6580" stroke-width="1" stroke-dasharray="2 3" opacity="0" pointer-events="none"/>`;
@@ -567,7 +592,7 @@ function initBubble(){
   // Y gridlines
   yS.ticks(5).forEach(v=>{
     g.append('line').attr('x1',0).attr('x2',cW).attr('y1',yS(v)).attr('y2',yS(v))
-      .attr('stroke','#132030').attr('stroke-width',1);
+      .attr('stroke','#1e3248').attr('stroke-width',1);
     g.append('text').attr('x',-8).attr('y',yS(v)+3).attr('text-anchor','end')
       .attr('fill','#4a6580').attr('font-family','IBM Plex Mono,monospace').attr('font-size',9).text(v.toFixed(0)+'h');
   });
@@ -575,7 +600,7 @@ function initBubble(){
   xS.ticks(5).forEach(v=>{
     if(v===0) return;
     g.append('line').attr('x1',xS(v)).attr('x2',xS(v)).attr('y1',0).attr('y2',cH)
-      .attr('stroke','#132030').attr('stroke-width',1);
+      .attr('stroke','#1e3248').attr('stroke-width',1);
     g.append('text').attr('x',xS(v)).attr('y',cH+18).attr('text-anchor','middle')
       .attr('fill','#4a6580').attr('font-family','IBM Plex Mono,monospace').attr('font-size',9)
       .text(v>=1000?(v/1000).toFixed(0)+'K':v);
@@ -643,11 +668,6 @@ function initBubble(){
 function bindControls(){
   $$('#metric-gap,#metric-hrs').forEach(b=>b.addEventListener('click',()=>setMetric(b.dataset.metric)));
   $('#reset-map').addEventListener('click',resetMap);
-  $('#toggle-norm').addEventListener('click',function(){
-    normMode = !normMode;
-    this.textContent = normMode ? 'Show absolute values' : 'Show normalised (%)';
-    drawSeasonal();
-  });
   $$('.filter-pill[data-sort]').forEach(pill=>{
     pill.addEventListener('click',function(){
       $$('.filter-pill[data-sort]').forEach(p=>p.classList.remove('active'));
