@@ -58,7 +58,7 @@
         outline-offset: 2px;
       }
 
-      /* Scroll progress bar */
+      /* Scroll */
       .scroll-progress {
         position: fixed;
         top: 0;
@@ -74,9 +74,7 @@
         transition: width 80ms linear;
       }
 
-      /* ------------------------------------------------------------
-   HEADER
-   ------------------------------------------------------------ */
+      /* HEADER */
       .site-header {
         position: fixed;
         top: 0;
@@ -85,7 +83,6 @@
         z-index: 100;
         display: flex;
         align-items: center;
-        /* CHANGE THIS LINE FROM space-between TO center */
         justify-content: center;
         padding: 0 32px;
         height: 60px;
@@ -155,9 +152,7 @@
         text-align: right;
       }
 
-      /* ------------------------------------------------------------
-   SIDE NAV
-   ------------------------------------------------------------ */
+      /* SIDE NAV */
       .side-nav {
         position: fixed;
         left: 22px;
@@ -213,9 +208,7 @@
         color: var(--fg-primary);
       }
 
-      /* ------------------------------------------------------------
-   GENERAL SECTION FRAME
-   ------------------------------------------------------------ */
+      /* GENERAL SECTION */
       section {
         scroll-margin-top: 60px;
       }
@@ -264,9 +257,7 @@
         font-weight: 300;
       }
 
-      /* ------------------------------------------------------------
-   HERO
-   ------------------------------------------------------------ */
+      /* HERO */
       .hero {
         min-height: 100vh;
         display: flex;
@@ -503,9 +494,7 @@
         }
       }
 
-      /* ------------------------------------------------------------
-   CHART CARD
-   ------------------------------------------------------------ */
+      /* CHART CARD */
       .chart-card {
         background: transparent;
         border: none;
@@ -882,7 +871,6 @@
         letter-spacing: 0.04em;
       }
 
-      /* GEAR SMALL MULTIPLES */
       .gear-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -966,15 +954,11 @@
         width: 100%;
       }
 
-      /* SEASONAL CHART — editorial line styling */
       #seasonal-svg path {
         stroke-linejoin: round;
         stroke-linecap: round;
       }
 
-      /* ------------------------------------------------------------
-   BREAK SECTION (Pull quote)
-   ------------------------------------------------------------ */
       .pullquote-section {
         padding: 120px 64px 120px 110px;
         max-width: 1100px;
@@ -1024,9 +1008,7 @@
         font-weight: 500;
       }
 
-      /* ------------------------------------------------------------
-   FOOTER
-   ------------------------------------------------------------ */
+      /* FOOTER */
       .site-footer {
         padding: 80px 64px 32px 110px;
         max-width: 1340px;
@@ -1098,9 +1080,6 @@
         letter-spacing: 0.04em;
       }
 
-      /* ------------------------------------------------------------
-   COMPACT MODE
-   ------------------------------------------------------------ */
       body.compact .narrative-section {
         padding-top: 60px;
         padding-bottom: 60px;
@@ -1125,9 +1104,7 @@
         padding-bottom: 64px;
       }
 
-      /* ------------------------------------------------------------
-   RESPONSIVE
-   ------------------------------------------------------------ */
+      /* RESPONSIVE */
       @media (max-width: 1100px) {
         .header-nav a:nth-child(n + 4) {
           display: none;
@@ -1213,7 +1190,6 @@
       </div>
     </nav>
 
-    <!-- ① HERO -->
     <section id="intro" class="hero">
       <div class="hero-grid"></div>
       <svg
@@ -1237,7 +1213,6 @@
             <stop offset="100%" stop-color="#f0a040" stop-opacity="0.3" />
           </linearGradient>
         </defs>
-        <!-- vessel track that fades from visible -> gap -> visible -->
         <path
           d="M 80 580 Q 280 540 460 560 T 820 540"
           fill="none"
@@ -1245,7 +1220,6 @@
           stroke-width="1.3"
           stroke-dasharray="4 3"
         />
-        <!-- dotted "dark" segment -->
         <path
           d="M 820 540 Q 980 530 1140 525"
           fill="none"
@@ -1261,7 +1235,6 @@
           stroke-width="1.3"
           stroke-dasharray="4 3"
         />
-        <!-- ship dots -->
         <circle cx="80" cy="580" r="2.5" fill="#3db8a8" />
         <circle cx="820" cy="540" r="3" fill="#3db8a8" opacity="0.9" />
         <circle cx="1140" cy="525" r="3" fill="#f0a040" opacity="0.9" />
@@ -1286,7 +1259,6 @@
         >
           AIS on
         </text>
-        <!-- second track -->
         <path
           d="M 120 240 Q 320 220 520 250 T 880 270"
           fill="none"
@@ -1362,7 +1334,7 @@
       </div>
     </section>
 
-    <!-- ② GLOBE / MAP -->
+    <!-- GLOBE MAP -->
     <section id="globe" class="narrative-section">
       <div class="section-label">02 Dark activity map</div>
       <h2 class="section-title">Where vessels go <em>dark.</em></h2>
@@ -1461,7 +1433,6 @@
       </div>
     </section>
 
-    <!-- PULL QUOTE BREAK -->
     <section class="pullquote-section">
       <p class="pullquote">
         The pattern is not noise. Gaps cluster
@@ -1473,7 +1444,7 @@
       </div>
     </section>
 
-    <!-- ③ SEASONAL LINE CHART -->
+    <!-- LINE CHART -->
     <section id="seasonal" class="narrative-section">
       <div class="section-label">03 Seasonal patterns</div>
       <h2 class="section-title">Do the patterns <em>move together?</em></h2>
@@ -1535,7 +1506,7 @@
       </div>
     </section>
 
-    <!-- ⑤ FLAG RANKING -->
+    <!-- FLAG RANKING -->
     <section id="flags" class="narrative-section" style="padding-top: 0">
       <div class="section-label">04 Flag ranking</div>
       <h2 class="section-title">Who dominates the <em>invisible fleet?</em></h2>
@@ -1609,7 +1580,7 @@
       </div>
     </section>
 
-    <!-- ⑥ BUBBLE SCATTER -->
+    <!-- BUBBLE SCATTER -->
     <section id="scatter" class="narrative-section" style="padding-top: 0">
       <div class="section-label">05 Duration vs. scale</div>
       <h2 class="section-title">Long gaps or many gaps?</h2>
@@ -1752,25 +1723,21 @@
       </div>
     </footer>
 
-    <!-- TWEAKS PANEL MOUNT -->
     <div id="tweaks-root"></div>
 
-    <!-- Data + chart modules -->
     <script src="dark-fleet-data.js"></script>
     <script src="dark-fleet-charts.js"></script>
 
-    <!-- Tweaks panel (React) -->
     <script type="text/babel" src="tweaks-panel.jsx"></script>
     <script type="text/babel" src="dark-fleet-tweaks.jsx"></script>
 
-    <!-- Edit mode persistence block -->
     <script>
-      window.__TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/ {
+      window.__TWEAK_DEFAULTS = {
         primaryAccent: "amber",
         density: "spacious",
         mapDefault: "globe",
         showUncertainty: true,
-      } /*EDITMODE-END*/;
+      };
     </script>
   </body>
 </html>
