@@ -14,7 +14,6 @@ function DarkFleetTweaks() {
   };
   const [t, setTweak] = useTweaks(defaults);
 
-  // Apply accent
   useEffect(() => {
     const map = {
       amber:  '#f0a040',
@@ -24,7 +23,6 @@ function DarkFleetTweaks() {
     };
     const c = map[t.primaryAccent] || '#f0a040';
     document.documentElement.style.setProperty('--accent-invisible', c);
-    // Tint variants
     const hex2rgba = (hex, a) => {
       const n = parseInt(hex.slice(1), 16);
       return `rgba(${(n>>16)&255}, ${(n>>8)&255}, ${n&255}, ${a})`;
@@ -33,22 +31,19 @@ function DarkFleetTweaks() {
     document.documentElement.style.setProperty('--accent-invisible-10', hex2rgba(c, 0.1));
   }, [t.primaryAccent]);
 
-  // Density
+
   useEffect(() => {
     document.body.classList.toggle('compact', t.density === 'compact');
   }, [t.density]);
 
-  // Uncertainty notes
   useEffect(() => {
     document.querySelectorAll('.uncertainty-note').forEach(el => {
       el.style.display = t.showUncertainty ? '' : 'none';
     });
   }, [t.showUncertainty]);
 
-  // Map default — only acts on first apply
   useEffect(() => {
     if (t.mapDefault === 'flat') {
-      // Defer to allow map init
       const tryClick = () => {
         const btn = document.getElementById('proj-flat');
         if (btn && !btn.classList.contains('active')) btn.click();

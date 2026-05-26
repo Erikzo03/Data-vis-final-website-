@@ -1,9 +1,3 @@
-/* ═══════════════════════════════════════════════════════════
-   DARK FLEET — DATA
-   Inlined from processed CSVs (GFW 2017–2019)
-   ═══════════════════════════════════════════════════════════ */
-
-// Seasonality
 const seasonalData = [
   {m:1,name:'Jan',gaps:3725,gapHrs:398126,fishHrs:8479573},
   {m:2,name:'Feb',gaps:4717,gapHrs:500311,fishHrs:8237555},
@@ -19,7 +13,7 @@ const seasonalData = [
   {m:12,name:'Dec',gaps:3455,gapHrs:317577,fishHrs:11151787}
 ];
 
-// Flag data (top 20)
+// Flag data
 const flagData = [
   {flag:'CHN',name:'China',       gaps:15624,hours:1216060,avg:77.8, vessels:1140},
   {flag:'TWN',name:'Taiwan',      gaps:12867,hours:1120753,avg:87.1, vessels:843},
@@ -55,7 +49,7 @@ const gearData = {
   'Fixed gear':         {total:900,   top:[{f:'CHN',v:320},{f:'JPN',v:210},{f:'KOR',v:180},{f:'USA',v:130},{f:'IDN',v:60}]}
 };
 
-// Globe hotspots (top cells)
+// Globe hotspots
 const globeHotspots = [
   {lat:-46,lon:-61,count:3200,hrs:185000,region:'Patagonian shelf'},
   {lat:-47,lon:-61,count:2800,hrs:162000,region:'Patagonian shelf'},

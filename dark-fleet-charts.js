@@ -1,15 +1,12 @@
-/* ═══════════════════════════════════════════════════════════
-   DARK FLEET — CHARTS + INTERACTIONS
-   ═══════════════════════════════════════════════════════════ */
+
 (function(){
 
-/* ───────── Helpers ───────── */
 const $ = sel => document.querySelector(sel);
 const $$ = sel => document.querySelectorAll(sel);
 const fmt = n => n.toLocaleString('en-US');
 const fmtK = n => n>=1e6 ? (n/1e6).toFixed(1)+'M' : n>=1000 ? (n/1000).toFixed(0)+'K' : n;
 
-/* ───────── Scroll progress + nav ───────── */
+/* Scroll progress */
 const sections = ['intro','globe','seasonal','flags','scatter'];
 const secLabels = ['01 / 05 — Introduction','02 / 05 — Dark activity map','03 / 05 — Seasonal patterns','04 / 05 — Flag ranking','05 / 05 — Duration vs. scale'];
 const navItems = $$('.side-nav-item');
@@ -38,7 +35,7 @@ window.addEventListener('scroll',()=>{
   if(progressBar) progressBar.style.width = pct + '%';
 },{passive:true});
 
-/* ───────── Hero count-up ───────── */
+/*  Hero count  */
 function animateCount(el){
   const target = parseFloat(el.dataset.count);
   const decimals = parseInt(el.dataset.decimals || '0');
@@ -58,9 +55,7 @@ const heroObs = new IntersectionObserver(entries=>{
 },{threshold:0.5});
 $$('[data-count]').forEach(el=>heroObs.observe(el));
 
-/* ═══════════════════════════════════════════════════════════
-   MAP (Globe ↔ Flat)
-   ═══════════════════════════════════════════════════════════ */
+/* MAP FLAT */
 const mapState = {
   mode:'globe',
   metric:'gap',
@@ -84,7 +79,6 @@ function initMap(){
   mapSvg = d3.select('#map-svg').attr('viewBox',`0 0 ${W} ${H}`);
   mapSvg.selectAll('*').remove();
 
-  // Defs
   const defs = mapSvg.append('defs');
   const grad = defs.append('radialGradient').attr('id','sphereGrad').attr('cx','35%').attr('cy','28%').attr('r','75%');
   grad.append('stop').attr('offset','0%').attr('stop-color','#1a3d5c');
@@ -99,7 +93,6 @@ function initMap(){
   atmo.append('stop').attr('offset','96%').attr('stop-color','#f0a040').attr('stop-opacity',0.12);
   atmo.append('stop').attr('offset','100%').attr('stop-color','#f0a040').attr('stop-opacity',0);
 
-  // Projection (globe only)
   projGlobe = d3.geoOrthographic()
     .scale(Math.min(W,H)*0.45)
     .translate([W/2, H/2])
@@ -108,12 +101,10 @@ function initMap(){
   currentProj = projGlobe;
   currentPath = d3.geoPath().projection(currentProj);
 
-  // Atmospheric glow (globe only)
   mapSvg.append('circle').attr('class','atmosphere')
     .attr('cx',W/2).attr('cy',H/2).attr('r',Math.min(W,H)*0.52)
     .attr('fill','url(#glow)').attr('pointer-events','none');
 
-  // Sphere fill
   sphereOcean = mapSvg.append('path').attr('class','sphere-ocean')
     .attr('d',currentPath({type:'Sphere'}))
     .attr('fill','url(#sphereGrad)')
@@ -122,12 +113,10 @@ function initMap(){
 
   mapG = mapSvg.append('g').attr('class','map-content');
 
-  // Graticule
   const gr = d3.geoGraticule().step([30,30]);
   mapG.append('path').attr('class','graticule')
     .datum(gr()).attr('fill','none').attr('stroke','#0e1a28').attr('stroke-width',0.4);
 
-  // World data
   if(mapState.world){
     drawLand();
     drawPoints();
@@ -142,7 +131,6 @@ function initMap(){
       }).catch(()=>{ drawPoints(); drawRegionLabels(); });
   }
 
-  // Drag = rotate globe
   const drag = d3.drag()
     .on('start',()=>{ mapState.autoRotate=false; clearInterval(autoRotateTimer); })
     .on('drag',(event)=>{
@@ -155,7 +143,6 @@ function initMap(){
 
   mapSvg.call(drag);
 
-  // Wheel zoom
   mapSvg.on('wheel',(event)=>{
     event.preventDefault();
     const delta = event.deltaY * -0.001;
@@ -268,7 +255,6 @@ function positionPoints(){
       return 0.35 + 0.55 * t;
     });
 
-  // Position named region labels with same back-face culling
   mapG.selectAll('.region-label').each(function(d){
     const dist = d3.geoDistance(center, [d.lon, d.lat]);
     if(dist >= Math.PI/2 - 0.08){ d3.select(this).attr('display','none'); return; }
@@ -317,7 +303,6 @@ function startAutoRotate(){
   }, 40);
 }
 
-// Stop auto-rotate when off-screen
 const mapObs = new IntersectionObserver(entries=>{
   entries.forEach(e=>{
     if(!e.isIntersecting){ clearInterval(autoRotateTimer); }
@@ -325,9 +310,7 @@ const mapObs = new IntersectionObserver(entries=>{
   });
 },{threshold:0.1});
 
-/* ═══════════════════════════════════════════════════════════
-   SEASONAL CHART
-   ═══════════════════════════════════════════════════════════ */
+/* LINE CHART */
 let normMode = true;
 function drawSeasonal(){
   const W=760, H=300, PL=52, PR=100, PT=24, PB=42;
@@ -344,7 +327,6 @@ function drawSeasonal(){
 
   let html='';
 
-  // Y gridlines + labels
   const ticks = [0.5,0.75,1];
   ticks.forEach(p=>{
     const y = PT+cH-p*cH;
@@ -353,25 +335,20 @@ function drawSeasonal(){
     html += `<text x="${PL-8}" y="${y+3}" text-anchor="end" fill="#4a6580" font-family="IBM Plex Mono,monospace" font-size="9">${label}</text>`;
   });
 
-  // X axis labels
   seasonalData.forEach((d,i)=>{
     html += `<text x="${xS(i)}" y="${H-12}" text-anchor="middle" fill="#4a6580" font-family="IBM Plex Mono,monospace" font-size="10" letter-spacing="0.04em">${d.name.toUpperCase()}</text>`;
   });
 
-  // Y-axis title
   html += `<text x="${PL-32}" y="${PT+cH/2}" text-anchor="middle" fill="#4a6580" font-family="IBM Plex Sans,sans-serif" font-size="10" transform="rotate(-90 ${PL-32} ${PT+cH/2})">Share of peak</text>`;
 
-  // Chart frame
   html += `<rect x="${PL}" y="${PT}" width="${cW}" height="${cH}" fill="none" stroke="#1e3248" stroke-width="0.5"/>`;
 
-  // ── Autumn shaded region (Sep–Oct, index 8–9) ──
   const autStart = xS(8);
   const autEnd   = xS(9);
   html += `<rect x="${autStart}" y="${PT}" width="${autEnd-autStart}" height="${cH}" fill="rgba(240,160,64,0.06)" rx="2"/>`;
   html += `<text x="${(autStart+autEnd)/2}" y="${PT+14}" text-anchor="middle" fill="#f0a040" font-family="IBM Plex Mono,monospace" font-size="8" letter-spacing="0.08em" opacity="0.7">PEAK SEASON</text>`;
 
-  // ── Smooth curves (monotone cubic spline via SVG) ──
-  // Helper: monotone-x tangent computation (Fritsch-Carlson)
+  // Smooth curves
   function monotonePath(vals, yFn){
     const n = vals.length;
     const xs = vals.map((_,i)=> xS(i));
@@ -387,7 +364,6 @@ function drawSeasonal(){
       else m.push((delta[i-1]+delta[i])/2);
     }
     m.push(delta[n-2]);
-    // Monotonicity constraint
     for(let i=0;i<n-1;i++){
       if(Math.abs(delta[i])<1e-12){ m[i]=0; m[i+1]=0; }
       else{
@@ -396,7 +372,6 @@ function drawSeasonal(){
         if(s>9){ const t=3/Math.sqrt(s); m[i]=t*a*delta[i]; m[i+1]=t*b*delta[i]; }
       }
     }
-    // Build cubic bezier path
     let d = `M${xs[0].toFixed(2)},${ys[0].toFixed(2)}`;
     for(let i=0;i<n-1;i++){
       const dx = (xs[i+1]-xs[i])/3;
@@ -407,15 +382,12 @@ function drawSeasonal(){
     return d;
   }
 
-  // Fishing hours line (smooth, dashed)
   const fPath = monotonePath(fV, yF);
   html += `<path d="${fPath}" fill="none" stroke="#3db8a8" stroke-width="1.8" stroke-dasharray="5 3" opacity="0.9"/>`;
 
-  // Gap events line (smooth, solid)
   const gPath = monotonePath(gV, yG);
   html += `<path d="${gPath}" fill="none" stroke="#f0a040" stroke-width="2.2"/>`;
 
-  // ── Direct labels at line ends ──
   const lastI = seasonalData.length - 1;
   const gEndY = yG(gV[lastI]);
   const fEndY = yF(fV[lastI]);
@@ -423,10 +395,8 @@ function drawSeasonal(){
   html += `<text x="${labelX}" y="${gEndY+4}" fill="#f0a040" font-family="IBM Plex Sans,sans-serif" font-size="11" font-weight="500">Gap events</text>`;
   html += `<text x="${labelX}" y="${fEndY+4}" fill="#3db8a8" font-family="IBM Plex Sans,sans-serif" font-size="11" font-weight="500">Fishing hours</text>`;
 
-  // Crosshair (hidden by default)
   html += `<line id="seasonal-crosshair" x1="0" y1="${PT}" x2="0" y2="${PT+cH}" stroke="#4a6580" stroke-width="1" stroke-dasharray="2 3" opacity="0" pointer-events="none"/>`;
 
-  // Hit targets
   gV.forEach((v,i)=>{
     html += `<rect class="s-hit" data-idx="${i}" x="${xS(i)-cW/24}" y="${PT}" width="${cW/12}" height="${cH}" fill="transparent" style="cursor:pointer"/>`;
     html += `<circle class="s-mark-gap" data-idx="${i}" cx="${xS(i)}" cy="${yG(gV[i])}" r="0" fill="#f0a040" pointer-events="none"/>`;
@@ -446,7 +416,7 @@ function drawSeasonal(){
       const d = seasonalData[i];
       const wr = wrap.getBoundingClientRect();
       const svgRect = svg.getBoundingClientRect();
-      // Position crosshair (in SVG coords)
+      // Position crosshair
       const xv = xS(i);
       crosshair.setAttribute('x1',xv); crosshair.setAttribute('x2',xv);
       crosshair.setAttribute('opacity',0.6);
@@ -457,7 +427,6 @@ function drawSeasonal(){
         <div class="tooltip-row-item"><div class="tooltip-dot" style="background:#f0a040"></div><span>Gap events</span><span class="tooltip-val">${fmt(d.gaps)}</span></div>
         <div class="tooltip-row-item"><div class="tooltip-dot" style="background:#3db8a8"></div><span>Fishing hrs</span><span class="tooltip-val">${(d.fishHrs/1e6).toFixed(1)}M</span></div>
         <div class="tooltip-row-item"><div class="tooltip-dot" style="background:#6b8fa8"></div><span>Gap hrs</span><span class="tooltip-val">${fmtK(d.gapHrs)}</span></div>`;
-      // Position tooltip near data point
       const ratio = svgRect.width / 760;
       const screenX = svgRect.left + xv*ratio - wr.left;
       tooltip.style.left = Math.min(screenX + 16, wr.width - 200) + 'px';
@@ -473,9 +442,6 @@ function drawSeasonal(){
   });
 }
 
-/* ═══════════════════════════════════════════════════════════
-   GEAR SMALL MULTIPLES
-   ═══════════════════════════════════════════════════════════ */
 function renderGear(){
   const container = $('#gear-grid');
   const gearColors = {
@@ -500,9 +466,7 @@ function renderGear(){
   }).join('');
 }
 
-/* ═══════════════════════════════════════════════════════════
-   FLAG BAR CHART
-   ═══════════════════════════════════════════════════════════ */
+/* FLAG BAR CHART */
 const sortKeys = {count:'gaps',hours:'hours',avg:'avg',vessels:'vessels'};
 const sortLabels = {count:'gap events',hours:'total gap hours',avg:'avg. gap duration',vessels:'unique vessels'};
 
@@ -566,9 +530,7 @@ function renderBars(sortKey){
   });
 }
 
-/* ═══════════════════════════════════════════════════════════
-   BUBBLE SCATTER
-   ═══════════════════════════════════════════════════════════ */
+/* BUBBLE SCATTER */
 function initBubble(){
   const wrap = $('#scatter-wrap');
   const W = wrap.clientWidth - 48 || 760;
@@ -605,7 +567,6 @@ function initBubble(){
       .attr('fill','#4a6580').attr('font-family','IBM Plex Mono,monospace').attr('font-size',9)
       .text(v>=1000?(v/1000).toFixed(0)+'K':v);
   });
-  // Axis labels
   g.append('text').attr('x',cW/2).attr('y',cH+40).attr('text-anchor','middle')
     .attr('fill','#4a6580').attr('font-family','IBM Plex Sans,sans-serif').attr('font-size',10)
     .attr('letter-spacing','0.04em').text('Total gap events →');
@@ -613,7 +574,6 @@ function initBubble(){
     .attr('fill','#4a6580').attr('font-family','IBM Plex Sans,sans-serif').attr('font-size',10)
     .attr('letter-spacing','0.04em').text('Average gap duration (hours) →');
 
-  // Reference lines: medians
   const medX = d3.median(data,d=>d.gaps);
   const medY = d3.median(data,d=>d.avg);
   g.append('line').attr('x1',xS(medX)).attr('x2',xS(medX)).attr('y1',0).attr('y2',cH)
@@ -652,7 +612,6 @@ function initBubble(){
     })
     .transition().duration(800).delay((d,i)=>i*30).attr('r',d=>rS(d.hours));
 
-  // Labels for large bubbles
   g.selectAll('.bubble-label').data(data.filter(d=>d.gaps>800)).enter().append('text')
     .attr('class','bubble-label')
     .attr('x',d=>xS(d.gaps)).attr('y',d=>yS(d.avg)+4)
@@ -662,9 +621,7 @@ function initBubble(){
     .transition().duration(600).delay(900).attr('opacity',0.92);
 }
 
-/* ═══════════════════════════════════════════════════════════
-   BIND CONTROLS + INIT
-   ═══════════════════════════════════════════════════════════ */
+/* BIND CONTROLS + INIT */
 function bindControls(){
   $$('#metric-gap,#metric-hrs').forEach(b=>b.addEventListener('click',()=>setMetric(b.dataset.metric)));
   $('#reset-map').addEventListener('click',resetMap);
@@ -686,7 +643,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   initBubble();
 });
 
-// Re-init responsive on resize (debounced)
+// Re-init responsive on resize
 let resizeTimer;
 window.addEventListener('resize',()=>{
   clearTimeout(resizeTimer);

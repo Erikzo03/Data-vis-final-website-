@@ -1,106 +1,80 @@
-/* ============================================================
-   DARK FLEET — Design System Tokens
-   colors_and_type.css
-   Invisible fishing vs. apparent fishing effort
-   IT University of Copenhagen, 2026
-   ============================================================ */
-
-/* ------------------------------------------------------------
-   GOOGLE FONTS IMPORT
-   NOTE: Source Serif 4 substitutes for the project's intended
-   editorial serif. IBM Plex Sans + Mono are exact matches.
-   ------------------------------------------------------------ */
+/* Fonts: Source Serif 4, IBM Plex Sans & Mono */
 @import url("https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@300;400;500&display=swap");
 
-/* ============================================================
-   COLOR TOKENS
-   ============================================================ */
-
+/* Colors */
 :root {
-  /* --- Backgrounds --- */
-  --bg-primary: #070d1a; /* Page background, deep ocean */
-  --bg-secondary: #0d1829; /* Panels, cards, sections */
-  --bg-elevated: #152236; /* Hover states, overlays, active panels */
-  --bg-overlay: rgba(7, 13, 26, 0.88); /* Modal / tooltip backdrops */
+  /* Backgrounds */
+  --bg-primary: #070d1a;
+  --bg-secondary: #0d1829;
+  --bg-elevated: #152236;
+  --bg-overlay: rgba(7, 13, 26, 0.88);
 
-  /* --- Foregrounds --- */
-  --fg-primary: #e8eef5; /* Body text, axis labels */
-  --fg-secondary: #8ba3bc; /* Captions, metadata, secondary labels */
-  --fg-muted: #4a6580; /* Disabled, placeholder, decorative */
-  --fg-on-accent: #070d1a; /* Text placed on accent backgrounds */
+  /* Foregrounds */
+  --fg-primary: #e8eef5;
+  --fg-secondary: #8ba3bc;
+  --fg-muted: #4a6580;
+  --fg-on-accent: #070d1a;
 
-  /* --- Semantic Accents --- */
-  --accent-visible: #3db8a8; /* Visible fleet / AIS-present / fishing effort */
-  --accent-invisible: #f0a040; /* Invisible fleet / AIS gap events / dark activity */
-  --accent-signal: #e85d3a; /* Extreme values / alert callouts */
-  --accent-neutral: #6b8fa8; /* Supporting data series, secondary lines */
+  /* Accents */
+  --accent-visible: #3db8a8;
+  --accent-invisible: #f0a040;
+  --accent-signal: #e85d3a;
+  --accent-neutral: #6b8fa8;
 
-  /* Tinted versions for fills / uncertainty zones */
   --accent-visible-20: rgba(61, 184, 168, 0.2);
   --accent-visible-10: rgba(61, 184, 168, 0.1);
   --accent-invisible-20: rgba(240, 160, 64, 0.2);
   --accent-invisible-10: rgba(240, 160, 64, 0.1);
   --accent-signal-20: rgba(232, 93, 58, 0.2);
 
-  /* --- Borders --- */
-  --border: #1e3248; /* Card borders, axis lines */
-  --border-subtle: #132030; /* Chart gridlines, section dividers */
-  --border-focus: #3db8a8; /* Focus rings on interactive elements */
+  /* Borders */
+  --border: #1e3248;
+  --border-subtle: #132030;
+  --border-focus: #3db8a8;
 
-  /* --- Chart Palette (sequential, accessible) --- */
-  --chart-1: #3db8a8; /* Teal – visible */
-  --chart-2: #f0a040; /* Amber – invisible */
-  --chart-3: #6b8fa8; /* Slate blue – neutral series */
-  --chart-4: #a07bd4; /* Soft purple – tertiary */
-  --chart-5: #e85d3a; /* Signal red – alerts */
-  --chart-6: #5bbce8; /* Sky blue – geographic highlights */
+  /* Charts */
+  --chart-1: #3db8a8;
+  --chart-2: #f0a040;
+  --chart-3: #6b8fa8;
+  --chart-4: #a07bd4;
+  --chart-5: #e85d3a;
+  --chart-6: #5bbce8;
 }
 
-/* ============================================================
-   TYPOGRAPHY TOKENS
-   ============================================================ */
-
+/* Typography */
 :root {
-  /* --- Font Families --- */
   --font-display: "Source Serif 4", Georgia, "Times New Roman", serif;
   --font-body: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
   --font-mono: "IBM Plex Mono", "Courier New", monospace;
 
-  /* --- Font Sizes (desktop base) --- */
-  --text-hero: clamp(40px, 6vw, 72px); /* Hero / page title */
-  --text-h1: clamp(28px, 3.5vw, 40px); /* Section title */
-  --text-h2: clamp(22px, 2.5vw, 28px); /* Subsection title */
-  --text-h3: 20px; /* Sub-subsection */
-  --text-body: 18px; /* Body copy */
-  --text-body-sm: 16px; /* Compact body */
-  --text-caption: 14px; /* Captions, annotations */
-  --text-label: 13px; /* Chart labels, tags */
-  --text-micro: 11px; /* Footnotes, data micro */
+  --text-hero: clamp(40px, 6vw, 72px);
+  --text-h1: clamp(28px, 3.5vw, 40px);
+  --text-h2: clamp(22px, 2.5vw, 28px);
+  --text-h3: 20px;
+  --text-body: 18px;
+  --text-body-sm: 16px;
+  --text-caption: 14px;
+  --text-label: 13px;
+  --text-micro: 11px;
 
-  /* --- Font Weights --- */
   --weight-light: 300;
   --weight-regular: 400;
   --weight-medium: 500;
   --weight-semibold: 600;
   --weight-bold: 700;
 
-  /* --- Line Heights --- */
-  --leading-tight: 1.15; /* Display / hero */
-  --leading-snug: 1.35; /* Headings */
-  --leading-normal: 1.6; /* Body copy */
-  --leading-loose: 1.8; /* Long-form reading */
+  --leading-tight: 1.15;
+  --leading-snug: 1.35;
+  --leading-normal: 1.6;
+  --leading-loose: 1.8;
 
-  /* --- Letter Spacing --- */
-  --tracking-tight: -0.02em; /* Large display numerals */
+  --tracking-tight: -0.02em;
   --tracking-normal: 0;
-  --tracking-wide: 0.04em; /* ALL-CAPS labels */
-  --tracking-wider: 0.08em; /* Tag pills, nav items */
+  --tracking-wide: 0.04em;
+  --tracking-wider: 0.08em;
 }
 
-/* ============================================================
-   SPACING TOKENS
-   ============================================================ */
-
+/* Spacing */
 :root {
   --space-1: 4px;
   --space-2: 8px;
@@ -113,50 +87,38 @@
   --space-9: 96px;
   --space-10: 128px;
 
-  /* Semantic spacing */
-  --section-gap: var(--space-9); /* Between major scroll sections */
-  --content-gap: var(--space-7); /* Between content blocks within section */
-  --reading-width: 720px; /* Max-width for body text */
-  --chart-width: 1100px; /* Max-width for chart breakouts */
+  --section-gap: var(--space-9);
+  --content-gap: var(--space-7);
+  --reading-width: 720px;
+  --chart-width: 1100px;
 }
 
-/* ============================================================
-   BORDER & RADIUS TOKENS
-   ============================================================ */
-
+/* Borders & Radius */
 :root {
-  --radius-sm: 2px; /* Tags / pills */
-  --radius-md: 4px; /* Cards, buttons, tooltips */
-  --radius-lg: 6px; /* Modal containers (max) */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 6px;
 
   --border-width: 1px;
   --border-style: solid;
 
-  /* Shorthand */
   --card-border: var(--border-width) var(--border-style) var(--border);
 }
 
-/* ============================================================
-   ANIMATION TOKENS
-   ============================================================ */
-
+/* Animation */
 :root {
   --ease-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
   --ease-in-out: cubic-bezier(0.45, 0, 0.55, 1);
 
-  --duration-fast: 150ms; /* Hover states */
-  --duration-mid: 300ms; /* UI transitions */
-  --duration-slow: 600ms; /* Section entrance */
-  --duration-chart: 800ms; /* Chart draws */
+  --duration-fast: 150ms;
+  --duration-mid: 300ms;
+  --duration-slow: 600ms;
+  --duration-chart: 800ms;
 
-  --entrance-translate: 24px; /* Scroll-in Y offset */
+  --entrance-translate: 24px;
 }
 
-/* ============================================================
-   SEMANTIC ELEMENT DEFAULTS
-   Apply these base styles via reset/globals in your HTML.
-   ============================================================ */
-
+/* Base Elements */
 html {
   font-size: 16px;
   background-color: var(--bg-primary);
@@ -182,7 +144,6 @@ body {
   z-index: 100;
   display: flex;
   align-items: center;
-  /* CHANGE THIS LINE FROM space-between TO center */
   justify-content: center;
   padding: 0 32px;
   height: 60px;
@@ -192,7 +153,6 @@ body {
   -webkit-backdrop-filter: blur(14px);
 }
 
-/* --- Headings --- */
 h1,
 .h1 {
   font-family: var(--font-display);
@@ -223,7 +183,6 @@ h3,
   margin: 0 0 var(--space-3);
 }
 
-/* --- Body copy --- */
 p {
   font-family: var(--font-body);
   font-size: var(--text-body);
@@ -234,7 +193,6 @@ p {
   max-width: var(--reading-width);
 }
 
-/* --- Captions / annotations --- */
 .caption,
 figcaption,
 .annotation {
@@ -244,7 +202,6 @@ figcaption,
   color: var(--fg-secondary);
 }
 
-/* --- Data labels --- */
 .data-label,
 .chart-label {
   font-family: var(--font-mono);
@@ -254,7 +211,6 @@ figcaption,
   letter-spacing: var(--tracking-normal);
 }
 
-/* --- All-caps labels / tags --- */
 .label-caps {
   font-family: var(--font-body);
   font-size: var(--text-label);
@@ -264,7 +220,6 @@ figcaption,
   color: var(--fg-secondary);
 }
 
-/* --- Inline code / coords --- */
 code,
 .mono {
   font-family: var(--font-mono);
@@ -275,7 +230,6 @@ code,
   border-radius: var(--radius-sm);
 }
 
-/* --- Links --- */
 a {
   color: var(--accent-visible);
   text-decoration: none;
@@ -285,18 +239,13 @@ a:hover {
   opacity: 0.75;
 }
 
-/* --- Horizontal rule --- */
 hr {
   border: none;
   border-top: 1px solid var(--border);
   margin: var(--space-8) 0;
 }
 
-/* ============================================================
-   UTILITY CLASSES
-   ============================================================ */
-
-/* Colors */
+/* Utility Classes */
 .text-primary {
   color: var(--fg-primary);
 }
@@ -316,7 +265,6 @@ hr {
   color: var(--accent-signal);
 }
 
-/* Backgrounds */
 .bg-primary {
   background-color: var(--bg-primary);
 }
@@ -327,7 +275,6 @@ hr {
   background-color: var(--bg-elevated);
 }
 
-/* Font families */
 .font-display {
   font-family: var(--font-display);
 }
@@ -338,7 +285,6 @@ hr {
   font-family: var(--font-mono);
 }
 
-/* Weight shortcuts */
 .light {
   font-weight: var(--weight-light);
 }
